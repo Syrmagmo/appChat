@@ -16,10 +16,10 @@
             android:name=".TelaPrincipal"
             android:exported="false" />
         <activity
-            android:name=".FormLogin"
+            android:name=".FormCadastro"
             android:exported="false" />
         <activity
-            android:name=".FormCadastro"
+            android:name=".FormLogin"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

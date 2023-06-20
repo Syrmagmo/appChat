@@ -109,7 +109,7 @@ public class FormLogin extends AppCompatActivity {
         text_tela_Cadastro = findViewById(R.id.text_tela_Cadastro);
         edit_email_login = findViewById(R.id.edit_email_login);
         edit_senha_login = findViewById(R.id.edit_confirma_senha);
-        btnLogin = findViewById(R.id.btnCadastro);
+        btnLogin = findViewById(R.id.btnLogin);
         progressLogin = findViewById(R.id.progressLogin);
 
 
