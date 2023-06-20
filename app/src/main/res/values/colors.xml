@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+
+    <color name="colorPrimary">#075e54</color>
+    <color name="ColorPrimaryDark">#054d44</color>
+    <color name="colorAccent">#25d366</color>
+
+        <color name="TextoDeFundo">#4D000000</color>
+        <color name="CorPrimaria">#6750A4</color>
+        <color name="BackGroundFundo">#8b558e</color>
+        <color name="BackgroundTelas">#D1AEFA</color>
+
+</resources>
