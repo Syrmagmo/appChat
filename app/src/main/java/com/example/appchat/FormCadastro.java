@@ -81,6 +81,10 @@ public class FormCadastro extends AppCompatActivity {
         });
 
     }
+    public void abrirLogin(View view) {
+        Intent intent = new Intent(FormCadastro.this, FormLogin.class);
+        startActivity(intent);
+    }
 
     private  void CadastrarUsuario(){
         String email = edit_email.getText().toString();
