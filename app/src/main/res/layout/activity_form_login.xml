@@ -63,8 +63,8 @@
 
     <TextView
         android:id="@+id/text_tela_Cadastro"
-        android:layout_width="147dp"
-        android:layout_height="38dp"
+        android:layout_width="140dp"
+        android:layout_height="32dp"
         android:layout_marginEnd="56dp"
         android:layout_marginBottom="4dp"
         android:onClick="abrirCadastro"
@@ -75,10 +75,10 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/edit_email_login"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.978"
+        app:layout_constraintHorizontal_bias="0.971"
         app:layout_constraintStart_toEndOf="@+id/Entrar_tela_login"
         app:layout_constraintTop_toTopOf="@+id/Entrar_tela_login"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.636" />
 
     <TextView
         android:id="@+id/Entrar_tela_login"
