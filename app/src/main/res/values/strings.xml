@@ -1,3 +1,24 @@
 <resources>
-    <string name="app_name">appChat</string>
+    <string name="app_name">TesteEnvioDedadosFirebase</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="generos_livros">
+        <item>Ação</item>
+        <item>Aventura</item>
+        <item>Romance</item>
+        <item>Ficção Científica</item>
+        <item>Drama</item>
+        <item>Terror</item>
+        <!-- Adicione mais gêneros de livros conforme necessário -->
+    </string-array>
+
+    <string-array name="estado_livros">
+        <item>Opções</item>
+        <item>Em perfeitas condições</item>
+        <item>O livro se encontra novo</item>
+        <item>Em condições medianas/orelhas</item>
+        <item>Com aspecto de velho</item>
+        <item>Muito usado</item>
+    </string-array>
 </resources>

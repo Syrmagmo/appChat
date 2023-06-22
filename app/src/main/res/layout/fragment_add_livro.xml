@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_degrade"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Fragment.Fragment_Add_livro">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:orientation="vertical">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/escolher_foto"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center"
+            app:cardCornerRadius="10dp"
+            android:layout_marginTop="13dp"
+            app:cardElevation="5dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/Inserir_foto_imageView"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/ic_addfoto"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="22dp"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginRight="99dp"
+            android:layout_marginTop="10dp"
+            android:padding="1dp"
+            android:text="TITULO DO LIVRO" />
+
+        <EditText
+            android:id="@+id/EditText_Titulo_Livro"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/background_caixa_texto"
+            android:hint="Ex: O mago"
+            android:paddingStart="15dp"
+            android:singleLine="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="22dp"
+            android:layout_marginTop="8dp"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginRight="97dp"
+            android:padding="1dp"
+            android:text="AUTOR DO LIVRO" />
+
+        <EditText
+            android:id="@+id/EditText_Autor_Livro"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/background_caixa_texto"
+            android:hint="Autor (a)"
+            android:paddingStart="15dp"
+            android:singleLine="true" />
+
+        <androidx.appcompat.widget.ActionMenuView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="230dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="158dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="94dp"
+                    android:padding="1dp"
+                    android:text="GENERO DO LIVRO"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/EditSP_Genero_Livro"
+                    android:layout_width="173dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/background_caixa_texto"
+                    android:hint="Terror"
+                    android:paddingStart="9dp"
+                    android:singleLine="true"
+                    android:entries="@array/generos_livros"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="14dp"
+                    android:layout_marginRight="10dp"
+                    android:padding="1dp"
+                    android:text="ANO" />
+
+                <EditText
+                    android:id="@+id/EditText_Ano_Livro"
+                    android:layout_width="119dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/background_caixa_texto"
+                    android:hint="Ex: 2023"
+                    android:maxLength="4"
+                    android:inputType="number"
+                    android:paddingStart="15dp"
+                    android:singleLine="true" />
+
+            </LinearLayout>
+
+        </androidx.appcompat.widget.ActionMenuView>
+
+        <TextView
+            android:layout_width="158dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="94dp"
+            android:padding="1dp"
+            android:text="ESTADO DO LIVRO"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/Spinner_Estado_Livro"
+            android:layout_width="350dp"
+            android:layout_height="48dp"
+            android:background="@drawable/background_caixa_texto"
+            android:hint="Terror"
+            android:paddingStart="9dp"
+            android:singleLine="true"
+            android:entries="@array/estado_livros"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="22dp"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="80dp"
+            android:padding="1dp"
+            android:text="DESCRIÇÃO DO LIVRVO" />
+
+        <EditText
+            android:id="@+id/editTextTextMultiLine_Descricao"
+            android:layout_width="match_parent"
+            android:layout_height="95dp"
+            android:background="@drawable/background_caixa_texto"
+            android:ems="10"
+            android:gravity="start|top"
+            android:hint="Descrição..."
+            android:inputType="textMultiLine"
+            android:padding="15dp" />
+
+        <LinearLayout
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+
+            <Button
+                android:id="@+id/btn_publicar"
+                android:layout_width="150dp"
+                android:layout_height="55dp"
+                android:textSize="19sp"
+                android:layout_marginTop="10dp"
+                android:text="Publicar" />
+
+            <Button
+                android:id="@+id/btn_voltar"
+                android:layout_width="150dp"
+                android:layout_height="55dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="10dp"
+                android:backgroundTint="#D64646"
+                android:text="Voltar"
+                android:textSize="19sp" />
+
+
+        </LinearLayout>
+        <!--
+        <androidx.appcompat.widget.ActionMenuView
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+
+            <Button
+                android:id="@+id/btn_publicar"
+                android:layout_width="151dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="10dp"
+                android:text="Publicar" />
+
+            <Button
+                android:id="@+id/btn_voltar"
+                android:layout_width="51dp"
+                android:layout_height="109dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="#D64646"
+                android:text="Voltar" />
+
+        </androidx.appcompat.widget.ActionMenuView>-->
+
+
+    </LinearLayout>
+
+
+
+</FrameLayout>
