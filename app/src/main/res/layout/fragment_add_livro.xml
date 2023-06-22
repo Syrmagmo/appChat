@@ -196,7 +196,7 @@
                 android:text="Publicar" />
 
             <Button
-                android:id="@+id/btn_voltar"
+                android:id="@+id/voltarBTN"
                 android:layout_width="150dp"
                 android:layout_height="55dp"
                 android:layout_marginLeft="40dp"

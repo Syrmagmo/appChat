@@ -101,6 +101,17 @@ public class Fragment_Add_livro extends Fragment {
 
         progressDialog = new ProgressDialog(getActivity());
 
+        Button voltarBtn = rootView.findViewById(R.id.voltarBTN);
+        voltarBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Código para redirecionar para a activity desejada
+                Intent intent = new Intent(getActivity(), TelaPrincipal.class);
+                startActivity(intent);
+            }
+        });
+
+
         Escolherfoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -194,11 +205,12 @@ public class Fragment_Add_livro extends Fragment {
                         @Override
                         public void onSuccess(Uri uri) {
                             FotoUrl = uri.toString();
-                            DatabaseReference LivroRef = mRootRef.child("Livros").push();
+                            DatabaseReference LivroRef = mRootRef.child("Livros").child(UsuarioAtualID).push();
                             String livroKey = LivroRef.getKey();
 
                             HashMap<String, String> livroMap = new HashMap<>();
                             livroMap.put("titulo", tituloLivro);
+                            livroMap.put("IdUsuario", UsuarioAtualID);
                             livroMap.put("autor", autorLivro);
                             livroMap.put("genero", generoLivro);
                             livroMap.put("ano", anoLivro);
