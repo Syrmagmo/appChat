@@ -44,7 +44,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 public class Fragment_Add_livro extends Fragment {
-    // Dados do livro
     private EditText edTituloDoLivro, edAutorDoLivro, edAnoDoLivro, edDescricaoDoLivro;
     private Spinner spGeneroDoLivro, spEstadoDoLivro;
     private MaterialCardView Escolherfoto;
@@ -54,10 +53,13 @@ public class Fragment_Add_livro extends Fragment {
     private String FotoUrl;
     private FirebaseStorage Storage;
     private FirebaseDatabase BancoTempoReal;
+    private DatabaseReference mRootRef;
     private StorageReference mStorageRef;
     private FirebaseAuth firebaseAuth;
     private String UsuarioAtualID;
     private ProgressDialog progressDialog;
+    private static final int PERMISSION_REQUEST_CODE = 1;
+    private static final int PICK_IMAGE_REQUEST_CODE = 1;
 
     public Fragment_Add_livro() {
         // Required empty public constructor
@@ -79,6 +81,9 @@ public class Fragment_Add_livro extends Fragment {
         firebaseAuth = FirebaseAuth.getInstance();
         UsuarioAtualID = firebaseAuth.getCurrentUser().getUid();
 
+
+        mRootRef = FirebaseDatabase.getInstance().getReference();
+
         Spinner spinner = rootView.findViewById(R.id.EditSP_Genero_Livro);
         ArrayAdapter<CharSequence> generoAdapter = ArrayAdapter.createFromResource(getActivity(), R.array.generos_livros, android.R.layout.simple_spinner_item);
         generoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -90,70 +95,58 @@ public class Fragment_Add_livro extends Fragment {
 
         progressDialog = new ProgressDialog(getActivity());
 
+        Escolherfoto = rootView.findViewById(R.id.escolher_foto);
+        FotoLivroImageView = rootView.findViewById(R.id.Inserir_foto_imageView);
+        mStorageRef = FirebaseStorage.getInstance().getReference();
+
+        progressDialog = new ProgressDialog(getActivity());
+
         Escolherfoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                checkPermission();
-            }
-        });
-        Button enviarButton = rootView.findViewById(R.id.btn_publicar);
-        enviarButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EnviarDadosDoLivro();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+                    } else {
+                        chooseImage();
+                    }
+                } else {
+                    chooseImage();
+                }
             }
         });
 
+        Button adicionarLivroBtn = rootView.findViewById(R.id.btn_publicar);
+        adicionarLivroBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                adicionarLivro();
+            }
+        });
 
         return rootView;
     }
-    private void LimparCampos() {
-        edTituloDoLivro.setText("");
-        edAutorDoLivro.setText("");
-        edAnoDoLivro.setText("");
-        edDescricaoDoLivro.setText("");
-        spGeneroDoLivro.setSelection(0);
-        spEstadoDoLivro.setSelection(0);
-        FotoLivroImageView.setImageResource(R.drawable.ic_addfoto); // Substitua "placeholder_image" pelo ID do seu recurso de imagem padrão
-        ImageUri = null;
-        bitmap = null;
-        FotoUrl = null;
-    }
 
-
-    private void checkPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-            } else {
-                pickImage();
-            }
-        } else {
-            pickImage();
-        }
-    }
-
-    private void pickImage() {
+    private void chooseImage() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, 1);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST_CODE);
     }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1) {
+        if (requestCode == PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                pickImage();
+                chooseImage();
             } else {
                 Toast.makeText(getActivity(), "Permissão negada", Toast.LENGTH_SHORT).show();
             }
         }
     }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode,
+                                 int resultCode,
+                                 Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == Activity.RESULT_OK && data != null) {
+        if (requestCode == PICK_IMAGE_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
             ImageUri = data.getData();
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), ImageUri);
@@ -164,204 +157,71 @@ public class Fragment_Add_livro extends Fragment {
         }
     }
 
-    private void EnviarDadosDoLivro() {
-        String TituloDoLivro = edTituloDoLivro.getText().toString();
-        String AutorDoLivro = edAutorDoLivro.getText().toString();
-        String GeneroDoLivro = spGeneroDoLivro.getSelectedItem().toString();
-        String AnoDoLivro = edAnoDoLivro.getText().toString();
-        String EstadoDoLivro = spEstadoDoLivro.getSelectedItem().toString();
-        String DescricaoDoLivro = edDescricaoDoLivro.getText().toString();
+    private void adicionarLivro() {
+        final String tituloLivro = edTituloDoLivro.getText().toString();
+        final String autorLivro = edAutorDoLivro.getText().toString();
+        final String generoLivro = spGeneroDoLivro.getSelectedItem().toString();
+        final String anoLivro = edAnoDoLivro.getText().toString();
+        final String estadoLivro = spEstadoDoLivro.getSelectedItem().toString();
+        final String descricaoLivro = edDescricaoDoLivro.getText().toString();
 
-        if (TextUtils.isEmpty(TituloDoLivro)) {
-            Toast.makeText(getActivity(), "Por favor, insira o título do livro", Toast.LENGTH_SHORT).show();
-        } else if (TextUtils.isEmpty(AutorDoLivro)) {
-            Toast.makeText(getActivity(), "Por favor, insira o nome do autor do livro", Toast.LENGTH_SHORT).show();
-        } else if (TextUtils.isEmpty(AnoDoLivro)) {
-            Toast.makeText(getActivity(), "Por favor, insira o ano do livro", Toast.LENGTH_SHORT).show();
-        } else if (TextUtils.isEmpty(DescricaoDoLivro)) {
-            Toast.makeText(getActivity(), "Por favor, insira uma descrição do livro", Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(tituloLivro)) {
+            Toast.makeText(getActivity(), "Digite o título do livro", Toast.LENGTH_SHORT).show();
+        } else if (TextUtils.isEmpty(autorLivro)) {
+            Toast.makeText(getActivity(), "Digite o autor do livro", Toast.LENGTH_SHORT).show();
+        } else if (TextUtils.isEmpty(anoLivro)) {
+            Toast.makeText(getActivity(), "Digite o ano do livro", Toast.LENGTH_SHORT).show();
+        } else if (TextUtils.isEmpty(descricaoLivro)) {
+            Toast.makeText(getActivity(), "Digite a descrição do livro", Toast.LENGTH_SHORT).show();
+        } else if (ImageUri == null) {
+            Toast.makeText(getActivity(), "Escolha uma foto para o livro", Toast.LENGTH_SHORT).show();
         } else {
-            progressDialog.setTitle("Enviando livro");
-            progressDialog.setMessage("Aguarde enquanto enviamos o livro...");
+            progressDialog.setTitle("Adicionando Livro");
+            progressDialog.setMessage("Por favor, aguarde enquanto adicionamos o livro");
             progressDialog.setCanceledOnTouchOutside(false);
-
             progressDialog.show();
 
-            DatabaseReference livroRef = BancoTempoReal.getReference().child("Livros").push();
-            String livroId = livroRef.getKey();
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream);
+            byte[] imageBytes = byteArrayOutputStream.toByteArray();
 
-            // Salvar a imagem no Firebase Storage
-            if (ImageUri != null) {
-                StorageReference imagemRef = mStorageRef.child("imagens_livros").child(livroId + ".jpg");
+            StorageReference filepath = mStorageRef.child("Imagens_Livros").child(ImageUri.getLastPathSegment() + ".jpg");
+            filepath.putBytes(imageBytes).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Task<Uri> downloadUri = taskSnapshot.getStorage().getDownloadUrl();
+                    downloadUri.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            FotoUrl = uri.toString();
+                            DatabaseReference LivroRef = mRootRef.child("Livros").push();
+                            String livroKey = LivroRef.getKey();
 
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                byte[] imageData = baos.toByteArray();
+                            HashMap<String, String> livroMap = new HashMap<>();
+                            livroMap.put("titulo", tituloLivro);
+                            livroMap.put("autor", autorLivro);
+                            livroMap.put("genero", generoLivro);
+                            livroMap.put("ano", anoLivro);
+                            livroMap.put("estado", estadoLivro);
+                            livroMap.put("descricao", descricaoLivro);
+                            livroMap.put("foto", FotoUrl);
 
-                UploadTask uploadTask = imagemRef.putBytes(imageData);
-                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        // Obter a URL da imagem salva
-                        Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
-                        urlTask.addOnCompleteListener(new OnCompleteListener<Uri>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Uri> task) {
-                                if (task.isSuccessful()) {
-                                    Uri downloadUri = task.getResult();
-                                    FotoUrl = downloadUri.toString();
-
-                                    // Criar um mapa com os dados do livro
-                                    Map<String, Object> livroMap = new HashMap<>();
-                                    livroMap.put("titulo", TituloDoLivro);
-                                    livroMap.put("autor", AutorDoLivro);
-                                    livroMap.put("genero", GeneroDoLivro);
-                                    livroMap.put("ano", AnoDoLivro);
-                                    livroMap.put("estado", EstadoDoLivro);
-                                    livroMap.put("descricao", DescricaoDoLivro);
-                                    livroMap.put("fotoUrl", FotoUrl);
-
-                                    livroRef.setValue(livroMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                progressDialog.dismiss();
-                                                Toast.makeText(getActivity(), "Livro enviado com sucesso", Toast.LENGTH_SHORT).show();
-                                                LimparCampos();
-                                            } else {
-                                                progressDialog.dismiss();
-                                                Toast.makeText(getActivity(), "Falha ao enviar o livro", Toast.LENGTH_SHORT).show();
-                                            }
-                                        }
-                                    });
-                                } else {
-                                    progressDialog.dismiss();
-                                    Toast.makeText(getActivity(), "Falha ao obter a URL da imagem", Toast.LENGTH_SHORT).show();
+                            LivroRef.setValue(livroMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        progressDialog.dismiss();
+                                        Toast.makeText(getActivity(), "Livro adicionado com sucesso!", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        progressDialog.dismiss();
+                                        Toast.makeText(getActivity(), "Erro ao adicionar livro", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
-
-                            }
-                        });
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        progressDialog.dismiss();
-                        Toast.makeText(getActivity(), "Falha ao enviar a imagem", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            } else {
-                // Criar um mapa com os dados do livro
-                Map<String, Object> livroMap = new HashMap<>();
-                livroMap.put("titulo", TituloDoLivro);
-                livroMap.put("autor", AutorDoLivro);
-                livroMap.put("genero", GeneroDoLivro);
-                livroMap.put("ano", AnoDoLivro);
-                livroMap.put("estado", EstadoDoLivro);
-                livroMap.put("descricao", DescricaoDoLivro);
-
-                livroRef.setValue(livroMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            progressDialog.dismiss();
-                            Toast.makeText(getActivity(), "Livro enviado com sucesso", Toast.LENGTH_SHORT).show();
-                            LimparCampos();
-                        } else {
-                            progressDialog.dismiss();
-                            Toast.makeText(getActivity(), "Falha ao enviar o livro", Toast.LENGTH_SHORT).show();
+                            });
                         }
-                    }
-                });
-
-            }
-        }
-    }
-
-
-
-
-    /*
-    private void EnviarDadosDoLivro() {
-        String TituloDoLivro = edTituloDoLivro.getText().toString();
-        String AutorDoLivro = edAutorDoLivro.getText().toString();
-        String GeneroDoLivro = spGeneroDoLivro.getSelectedItem().toString();
-        String AnoDoLivro = edAnoDoLivro.getText().toString();
-        String EstadoDoLivro = spEstadoDoLivro.getSelectedItem().toString();
-        String DescricaoDoLivro = edDescricaoDoLivro.getText().toString();
-
-        if (TextUtils.isEmpty(TituloDoLivro)) {
-            Toast.makeText(getActivity(), "Por favor, insira o título do livro", Toast.LENGTH_SHORT).show();
-        } else if (TextUtils.isEmpty(AutorDoLivro)) {
-            Toast.makeText(getActivity(), "Por favor, insira o nome do autor do livro", Toast.LENGTH_SHORT).show();
-        } else if (TextUtils.isEmpty(AnoDoLivro)) {
-            Toast.makeText(getActivity(), "Por favor, insira o ano do livro", Toast.LENGTH_SHORT).show();
-        } else if (TextUtils.isEmpty(DescricaoDoLivro)) {
-            Toast.makeText(getActivity(), "Por favor, insira uma descrição do livro", Toast.LENGTH_SHORT).show();
-        } else {
-            progressDialog.setTitle("Enviando livro");
-            progressDialog.setMessage("Aguarde enquanto enviamos o livro...");
-            progressDialog.setCanceledOnTouchOutside(false);
-            progressDialog.show();
-
-            ArmazenarImagemNoFirebase();
-        }
-    }
-
- */
-    private void ArmazenarImagemNoFirebase() {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream);
-        byte[] imageData = byteArrayOutputStream.toByteArray();
-
-        StorageReference filepath = mStorageRef.child("Imagens").child(edTituloDoLivro.getText().toString() + ".jpg");
-        UploadTask uploadTask = filepath.putBytes(imageData);
-        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
-                while (!urlTask.isSuccessful()) ;
-                Uri downloadUrl = urlTask.getResult();
-                FotoUrl = downloadUrl.toString();
-
-                SalvarDadosDoLivroNoFirebase();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getActivity(), "Erro ao enviar imagem", Toast.LENGTH_SHORT).show();
-                progressDialog.dismiss();
-            }
-        });
-    }
-
-    private void SalvarDadosDoLivroNoFirebase() {
-        DatabaseReference LivrosRef = BancoTempoReal.getReference().child("Livros");
-        String LivroID = LivrosRef.push().getKey();
-
-        Map<String, Object> livroMap = new HashMap<>();
-        livroMap.put("livroID", LivroID);
-        livroMap.put("titulo", edTituloDoLivro.getText().toString());
-        livroMap.put("autor", edAutorDoLivro.getText().toString());
-        livroMap.put("genero", spGeneroDoLivro.getSelectedItem().toString());
-        livroMap.put("ano", edAnoDoLivro.getText().toString());
-        livroMap.put("estado", spEstadoDoLivro.getSelectedItem().toString());
-        livroMap.put("descricao", edDescricaoDoLivro.getText().toString());
-        livroMap.put("foto", FotoUrl);
-        livroMap.put("userID", UsuarioAtualID);
-
-        LivrosRef.child(LivroID).updateChildren(livroMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    Toast.makeText(getActivity(), "Livro enviado com sucesso", Toast.LENGTH_SHORT).show();
-                    progressDialog.dismiss();
-                } else {
-                    String mensagem = task.getException().toString();
-                    Toast.makeText(getActivity(), "Erro ao enviar livro: " + mensagem, Toast.LENGTH_SHORT).show();
-                    progressDialog.dismiss();
+                    });
                 }
-            }
-        });
+            });
+        }
     }
-
 }
