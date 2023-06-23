@@ -49,13 +49,14 @@ public class FormLogin extends AppCompatActivity {
                 String email = edit_email_login.getText().toString();
                 String senha = edit_senha_login.getText().toString();
 
-                if (email.isEmpty() || senha.isEmpty()){
-
-                }else{
-                    AutenticarUsuario();
+                if (email.isEmpty() || senha.isEmpty()) {
+                    Toast.makeText(FormLogin.this, "Preencha todos os campos!", Toast.LENGTH_SHORT).show();
+                } else {
+                    AutenticarUsuario(email, senha);
                 }
             }
         });
+
     }
 
     protected void onStart(){
@@ -64,15 +65,13 @@ public class FormLogin extends AppCompatActivity {
         FirebaseUser usuarioAtual = FirebaseAuth.getInstance().getCurrentUser();
 
         if (usuarioAtual != null){
-            //caso o ousaurio estiver logado va para tela principal
+            //caso o usuário esteja logado, vá para a tela principal
             TelaPrincipal();
         }
     }
-    private void AutenticarUsuario(){
-        String email = edit_email_login.getText().toString();
-        String senha = edit_senha_login.getText().toString();
 
-        FirebaseAuth.getInstance().signInWithEmailAndPassword(email,senha).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+    private void AutenticarUsuario(String email, String senha){
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, senha).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
 
@@ -85,14 +84,13 @@ public class FormLogin extends AppCompatActivity {
                             TelaPrincipal();
                         }
                     }, 3000);
-                }else{
-                    String erro;
+                } else {
+                    String erro = "Erro ao logar usuário";
 
-                    try{
-                        throw task.getException();
-                    }catch (Exception e){
-                        erro = "Erro ao logar Usuario";
+                    if (task.getException() != null) {
+                        erro = task.getException().getMessage();
                     }
+
                     Toast.makeText(FormLogin.this, erro, Toast.LENGTH_SHORT).show();
                 }
             }
@@ -108,10 +106,8 @@ public class FormLogin extends AppCompatActivity {
     private void IniciarComponentes(){
         text_tela_Cadastro = findViewById(R.id.text_tela_Cadastro);
         edit_email_login = findViewById(R.id.edit_email_login);
-        edit_senha_login = findViewById(R.id.edit_confirma_senha);
+        edit_senha_login = findViewById(R.id.edit_senha_login);
         btnLogin = findViewById(R.id.btnLogin);
         progressLogin = findViewById(R.id.progressLogin);
-
-
     }
 }
