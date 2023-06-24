@@ -3,8 +3,11 @@ package com.example.appchat.Adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.example.appchat.R;
 import com.example.appchat.model.Livro;
 
@@ -36,6 +39,12 @@ public class LivroAdapter extends RecyclerView.Adapter<LivroAdapter.ViewHolder> 
         holder.textAutor.setText(livro.getAutor());
         holder.textAno.setText(String.valueOf(livro.getAno()));
         holder.textGenero.setText(livro.getGenero());
+
+        Glide.with(holder.itemView.getContext())
+                .load(livro.getFoto())
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .into(holder.imageView);
+
     }
 
     @Override
@@ -48,6 +57,7 @@ public class LivroAdapter extends RecyclerView.Adapter<LivroAdapter.ViewHolder> 
         TextView textAutor;
         TextView textAno;
         TextView textGenero;
+        ImageView imageView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -55,6 +65,7 @@ public class LivroAdapter extends RecyclerView.Adapter<LivroAdapter.ViewHolder> 
             textAutor = itemView.findViewById(R.id.TextAutor);
             textAno = itemView.findViewById(R.id.textAno);
             textGenero = itemView.findViewById(R.id.TextGenero);
+            imageView = itemView.findViewById(R.id.imageView_recicler_veiw);
         }
     }
 }
